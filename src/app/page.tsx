@@ -1,57 +1,6 @@
-import Image, { type StaticImageData } from "next/image";
 import SendLinkForm from "./components/send-link-form";
+import { CardCloud, CardDeck } from "./components/feature-cards";
 import { storeUrl, type StoreSource } from "./site";
-import home from "@/assets/screenshots/home.png";
-import findClasses from "@/assets/screenshots/find-classes.png";
-import plan from "@/assets/screenshots/plan.png";
-import schedule from "@/assets/screenshots/schedule.png";
-import degree from "@/assets/screenshots/degree.png";
-
-// Screenshots are copies of store-assets/*.png in the mercedtime repo (sample data, not a real student).
-
-const CHIPS = ["Class search", "Semester planner", "Weekly schedule", "Degree audit", "Seat alerts", "Registration reminders"];
-
-const FEATURES: { title: string; body: string; shot: StaticImageData; alt: string }[] = [
-  {
-    title: "Find classes",
-    body: "Search by class name, subject, course number, CRN or instructor, and see open seats, waitlists, times, rooms, final exams and prerequisites at a glance.",
-    shot: findClasses,
-    alt: "Find classes: a searchable course list with open seats, times and a section detail panel.",
-  },
-  {
-    title: "Plan",
-    body: "Every semester in one list, from classes you’ve taken to future plans. See every possible schedule for your classes, keep lunch free, and sort by fewest days on campus.",
-    shot: plan,
-    alt: "Plan: every semester listed with planned courses and unit totals.",
-  },
-  {
-    title: "Schedule",
-    body: "Your week, drawn from your registered or planned classes, with the free time between them, dining hall hours, and a one-click download as an image.",
-    shot: schedule,
-    alt: "Schedule: a weekly calendar of registered classes with free time between them.",
-  },
-  {
-    title: "Degree",
-    body: "Your degree audit, with each requirement marked done, in progress, planned or still needed, and what your plan would finish.",
-    shot: degree,
-    alt: "Degree: the degree audit with each requirement marked done, in progress, planned or needed.",
-  },
-];
-
-const POINTS = [
-  {
-    title: "Never asks for your password",
-    body: "It works with the UC Merced registration and degree audit sites you’re already signed in to.",
-  },
-  {
-    title: "Can’t add or drop classes",
-    body: "Its Register button takes you to UC Merced’s own registration page for that.",
-  },
-  {
-    title: "Your data stays with you",
-    body: "Your plan and settings follow you through Chrome sync, if you have it on. Everything else stays on your computer.",
-  },
-];
 
 // Phones and tablets can't install Chrome extensions, so where the main pointer is a finger
 // (pointer: coarse) the store buttons give way to a form that emails the student the link.
@@ -73,93 +22,56 @@ function StoreButton({ source }: { source: StoreSource }) {
 
 export default function Home() {
   return (
-    <main>
-      <section className="overflow-hidden bg-[linear-gradient(160deg,var(--color-navy-light)_0%,var(--color-navy)_45%,var(--color-navy-deep)_100%)] text-white">
-        <div className="mx-auto grid max-w-6xl items-center gap-14 px-5 py-16 md:py-24 lg:grid-cols-[1fr_1.2fr]">
-          <div>
-            <div className="font-display text-5xl leading-none tracking-wide">
-              M<span className="text-gold">T</span>
-            </div>
-            <h1 className="mt-2 font-display text-[clamp(64px,11vw,118px)] leading-[.86] tracking-wide">
-              MERCED<span className="text-gold">TIME</span>
-            </h1>
-            <div className="mt-7 mb-6 h-1 w-16 bg-gold" />
-            <p className="max-w-md text-xl leading-snug font-semibold md:text-2xl">
-              Search UC Merced classes, build schedules around your preferences, and track your degree.
-            </p>
-            <ul className="mt-6 flex max-w-md flex-wrap gap-2">
-              {CHIPS.map((chip) => (
-                <li key={chip} className="rounded-full border border-gold/60 px-3 py-1 text-sm text-[#f1dfa4]">
-                  {chip}
-                </li>
-              ))}
-            </ul>
-            <div className="mt-9 flex flex-wrap items-center gap-x-5 gap-y-3 pointer-coarse:hidden">
-              <StoreButton source="mercedtime-website-hero" />
-              <span className="text-sm text-[#9fb0c6]">Free for UC Merced students</span>
-            </div>
-            <SendLinkForm siteKey={TURNSTILE_SITE_KEY} className="mt-9 hidden max-w-md pointer-coarse:block" />
-            <p className="mt-6 text-sm text-[#9fb0c6]">
-              Uses your existing UC Merced sign-in · Your data stays in your browser
-            </p>
-          </div>
+    // With a mouse the gradient runs down the page. On phones and tablets (compact:) it holds still
+    // behind it instead, so the deck's cards move over the same colours the whole way through.
+    <main className="relative isolate overflow-x-clip bg-[linear-gradient(160deg,var(--color-navy-light)_0%,var(--color-navy)_45%,var(--color-navy-deep)_100%)] text-white compact:bg-none">
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-x-0 top-0 -z-10 hidden h-lvh bg-[linear-gradient(160deg,var(--color-navy-light)_0%,var(--color-navy)_30%,var(--color-navy-deep)_60%)] compact:block"
+      />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 mx-auto hidden max-w-[1280px] md:block">
+        <div className="absolute top-[-260px] right-[-280px] size-[800px] rounded-full bg-[radial-gradient(circle,rgb(64_140_255/.28),rgb(64_140_255/0)_70%)]" />
+        <div className="absolute top-6 right-[254px] h-[60px] w-24 rounded-[10px] bg-white/5" />
+        <div className="absolute top-6 right-[144px] h-[120px] w-24 rounded-[10px] bg-white/5" />
+        <div className="absolute top-6 right-[34px] h-16 w-24 rounded-[10px] bg-gold/10" />
+        <div className="absolute top-[100px] right-[34px] h-[150px] w-24 rounded-[10px] bg-white/5" />
+      </div>
 
-          <div className="overflow-hidden rounded-xl bg-white shadow-[0_40px_90px_rgba(0,0,0,.55)] ring-1 ring-white/10">
-            <div className="flex h-8 items-center gap-1.5 bg-[#e9edf2] px-3.5" aria-hidden>
-              <span className="size-2.5 rounded-full bg-[#c4cbd4]" />
-              <span className="size-2.5 rounded-full bg-[#c4cbd4]" />
-              <span className="size-2.5 rounded-full bg-[#c4cbd4]" />
-            </div>
-            <Image
-              src={home}
-              alt="The MercedTime home page: this semester’s weekly calendar, a registration countdown, CRNs to copy and the courses being watched for open seats."
-              sizes="(min-width: 1152px) 600px, (min-width: 1024px) 52vw, 100vw"
-              priority
-            />
-          </div>
+      {/* snap-start (and on the closing section): places the page comes to rest, while the deck makes it snap. */}
+      <section className="relative flex snap-start flex-col items-start px-6 pt-[88px] pb-12 md:items-center md:px-16 md:pt-20 md:text-center">
+        <div className="font-display text-[40px] leading-none tracking-[1px] md:text-[52px]">
+          M<span className="text-gold">T</span>
         </div>
+        <h1 className="mt-2 font-display text-[min(80px,20vw)] leading-[.86] tracking-[1px] md:mt-2.5 md:text-[118px]">
+          MERCED<span className="text-gold">TIME</span>
+        </h1>
+        <div className="mt-[22px] mb-[18px] h-1 w-14 bg-gold md:mt-7 md:mb-[22px] md:w-16" />
+        <p className="text-xl leading-[1.4] font-semibold md:max-w-[520px] md:text-2xl md:text-balance">
+          Search UC Merced classes, build schedules around your preferences, and track your degree.
+        </p>
+        <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3 md:mt-9 pointer-coarse:hidden">
+          <StoreButton source="mercedtime-website-hero" />
+          <span className="text-sm text-[#9fb0c6]">Free for UC Merced students</span>
+        </div>
+        <SendLinkForm siteKey={TURNSTILE_SITE_KEY} className="mt-7 hidden w-full max-w-md text-left md:mt-9 pointer-coarse:block" />
+        <p className="mt-12 hidden font-display text-xl leading-none tracking-[.14em] text-[#9fb0c6] compact:block">
+          What it does <span aria-hidden>↓</span>
+        </p>
       </section>
 
-      <section className="mx-auto max-w-6xl px-5 py-20">
-        <h2 className="max-w-2xl text-3xl leading-tight font-bold md:text-4xl">
-          Your classes, schedule, plan and degree progress, in one place.
-        </h2>
-        <div className="mt-12 grid gap-x-10 gap-y-14 md:grid-cols-2">
-          {FEATURES.map((f) => (
-            <article key={f.title}>
-              <Image
-                src={f.shot}
-                alt={f.alt}
-                sizes="(min-width: 1152px) 536px, (min-width: 768px) 46vw, 100vw"
-                className="rounded-lg border border-rule shadow-sm"
-              />
-              <h3 className="mt-5 text-xl font-semibold">{f.title}</h3>
-              <p className="mt-2 leading-relaxed text-muted">{f.body}</p>
-            </article>
-          ))}
-        </div>
-      </section>
+      {/* mb-12 leaves the footer's fade (the 3rem above it) on empty background, not the lowest cards. */}
+      <CardCloud className="mt-6 mb-12 compact:hidden" />
+      <CardDeck className="hidden compact:block" />
 
-      <section className="border-t border-rule">
-        <div className="mx-auto max-w-6xl px-5 py-20">
-          <h2 className="text-3xl leading-tight font-bold md:text-4xl">How it works</h2>
-          <div className="mt-10 grid gap-10 md:grid-cols-3">
-            {POINTS.map((p) => (
-              <div key={p.title} className="border-t-4 border-gold pt-4">
-                <h3 className="text-lg font-semibold">{p.title}</h3>
-                <p className="mt-2 leading-relaxed text-muted">{p.body}</p>
-              </div>
-            ))}
+      <section className="hidden snap-start bg-navy-deep px-6 pt-14 pb-10 compact:block">
+        <div className="mx-auto max-w-md">
+          <p className="font-display text-[44px] leading-[.95] tracking-[1px]">
+            Free for every UC Merced <span className="text-gold">student</span>
+          </p>
+          <div className="mt-6 pointer-coarse:hidden">
+            <StoreButton source="mercedtime-website-bottom" />
           </div>
-          <div className="mt-16 flex flex-col items-start gap-4 rounded-xl bg-navy px-8 py-10 text-white md:flex-row md:items-center md:justify-between">
-            <p className="font-display text-4xl leading-none tracking-wide">
-              Free for every UC Merced <span className="text-gold">student</span>
-            </p>
-            <div className="pointer-coarse:hidden">
-              <StoreButton source="mercedtime-website-bottom" />
-            </div>
-            <SendLinkForm siteKey={TURNSTILE_SITE_KEY} className="hidden w-full max-w-md pointer-coarse:block" />
-          </div>
+          <SendLinkForm siteKey={TURNSTILE_SITE_KEY} className="mt-6 hidden pointer-coarse:block" />
         </div>
       </section>
     </main>

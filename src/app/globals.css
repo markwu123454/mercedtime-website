@@ -8,6 +8,32 @@
   --color-gold: #d8ac27;
 }
 
+/*
+ * Phones, tablets and windows too narrow for the home page's card cloud: there the cards are a deck
+ * dealt out by scrolling instead (components/feature-cards.tsx). A touchscreen laptop, whose main
+ * pointer is still the mouse, gets the cloud.
+ */
+@custom-variant compact {
+  @media (width < 64rem), (pointer: coarse) {
+    @slot;
+  }
+}
+
+/*
+ * While the deck is showing, the page snaps: to its top (the hero), each of the deck's stops, and
+ * its end. The browser's own momentum carries into the snap, so the page scrolls one way throughout.
+ * The footer is the page's end; the hero, the deck's stops and the closing section carry snap-start
+ * themselves (page.tsx, feature-cards.tsx).
+ */
+@media (width < 64rem), (pointer: coarse) {
+  html:has([data-deck-snap]) {
+    scroll-snap-type: y mandatory;
+  }
+  html:has([data-deck-snap]) body > footer {
+    scroll-snap-align: end;
+  }
+}
+
 /* Page colours that flip with light/dark mode, as utilities: bg-page, text-muted, border-rule... */
 @theme inline {
   --color-page: var(--bg);
