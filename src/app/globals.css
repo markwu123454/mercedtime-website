@@ -1,26 +1,28 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/*
+ * Plain document look shared by every page (moved here from the inline
+ * <style> blocks the pages had on markwu.org). It sits in the base layer so
+ * Tailwind utilities still override it, and it puts back the browser
+ * defaults Tailwind's preflight removes (paragraph spacing, bullets, bold
+ * headings, underlined links, content-box sizing).
+ */
+@layer base {
+  :root { color-scheme: light dark; --bg: #ffffff; --fg: #1b1f24; --muted: #4b5563; --rule: #e5e7eb; --accent: #0f2e53; --gold: #b8901c; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0d1117; --fg: #e6e8eb; --muted: #a3acb9; --rule: #2a313c; --accent: #8db4e8; --gold: #d8ac27; }
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  html, body { margin: 0; background: var(--bg); color: var(--fg); }
+  body { font: 16px/1.7 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+  main { box-sizing: content-box; max-width: 720px; margin: 0 auto; padding: 56px 20px 80px; }
+  .brand { font: 700 14px/1 system-ui, sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+  .brand span { color: var(--gold); }
+  h1 { font-size: clamp(30px, 6vw, 40px); font-weight: 700; line-height: 1.15; margin: 14px 0 6px; }
+  .updated { color: var(--muted); font-size: 14px; margin: 0 0 32px; padding-bottom: 24px; border-bottom: 1px solid var(--rule); }
+  h2 { font-size: 20px; font-weight: 700; line-height: 1.3; margin: 40px 0 8px; }
+  p, ul { margin: 1em 0; }
+  p, li { color: var(--muted); }
+  ul { padding-left: 22px; list-style: disc; }
+  li + li { margin-top: 6px; }
+  a { color: var(--accent); text-decoration: underline; }
 }
