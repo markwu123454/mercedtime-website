@@ -19,21 +19,6 @@
   }
 }
 
-/*
- * While the deck is showing, the page snaps: to its top (the hero), each of the deck's stops, and
- * its end. The browser's own momentum carries into the snap, so the page scrolls one way throughout.
- * The footer is the page's end; the hero, the deck's stops and the closing section carry snap-start
- * themselves (page.tsx, feature-cards.tsx).
- */
-@media (width < 64rem), (pointer: coarse) {
-  html:has([data-deck-snap]) {
-    scroll-snap-type: y mandatory;
-  }
-  html:has([data-deck-snap]) body > footer {
-    scroll-snap-align: end;
-  }
-}
-
 /* Page colours that flip with light/dark mode, as utilities: bg-page, text-muted, border-rule... */
 @theme inline {
   --color-page: var(--bg);

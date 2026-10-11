@@ -37,8 +37,7 @@ export default function Home() {
         <div className="absolute top-[100px] right-[34px] h-[150px] w-24 rounded-[10px] bg-white/5" />
       </div>
 
-      {/* snap-start (and on the closing section): places the page comes to rest, while the deck makes it snap. */}
-      <section className="relative flex snap-start flex-col items-start px-6 pt-[88px] pb-12 md:items-center md:px-16 md:pt-20 md:text-center">
+      <section className="relative flex flex-col items-start px-6 pt-[88px] pb-12 md:items-center md:px-16 md:pt-20 md:text-center">
         <div className="font-display text-[40px] leading-none tracking-[1px] md:text-[52px]">
           M<span className="text-gold">T</span>
         </div>
@@ -63,7 +62,7 @@ export default function Home() {
       <CardCloud className="mt-6 mb-12 compact:hidden" />
       <CardDeck className="hidden compact:block" />
 
-      <section className="hidden snap-start bg-navy-deep px-6 pt-14 pb-10 compact:block">
+      <section className="hidden bg-navy-deep px-6 pt-14 pb-10 compact:block">
         <div className="mx-auto max-w-md">
           <p className="font-display text-[44px] leading-[.95] tracking-[1px]">
             Free for every UC Merced <span className="text-gold">student</span>

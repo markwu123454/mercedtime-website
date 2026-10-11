@@ -234,12 +234,63 @@ const STEP = 420; // px of scrolling per card
 // A card is fully out within HOLD of its place in the deck, and back in the pile FADE after that.
 const HOLD = 0.12;
 const FADE = 0.5;
-const REACH = HOLD + FADE;
-// Where the page snaps to in the deck: each card in front, and the pile with no card out, just
-// before the first card and just after the last.
-const STOPS = [-REACH, ...CARDS.map((_, i) => i), CARDS.length - 1 + REACH];
+// The deck, in cards: where the stage is stuck to the screen, from the pile at rest just before the
+// first card to the pile at rest just after the last. Inside it, forces pull the page into the
+// cards; on the rest of the page (the hero, the closing section, the footer) it only slows.
+const ENTER = -0.6;
+const EXIT = CARDS.length - 1 + 0.6;
+// How quickly a thrown page slows: the ms its speed takes to fall by e. FRICTION on the rest of the
+// page, about like a phone's own scrolling; DRAG in the deck, so an ordinary swipe goes one card on.
+const FRICTION = 450;
+const DRAG = 100;
+// The pull into a card, per ms, as a critically damped spring: stronger than the drag, it takes the
+// page into the card in about half a second, quickening between cards and slowing into the card.
+const PULL = 0.01;
+// How far past a card (in cards: 84px) a throw has to come to rest to mean "next". Less, and the
+// deck falls back to the card, so brushing the screen doesn't change cards.
+const NUDGE = 0.2;
 // How much the cards linger in front and hurry between, from 0 (steadily) to 1 (stopping dead).
 const LINGER = 0.5;
+
+/**
+ * Where friction alone would bring a page thrown from `at` (in cards) at `v` px/ms (+ on through
+ * the cards) to rest: FRICTION outside the deck, DRAG inside it.
+ */
+function landing(at: number, v: number) {
+  const dir = Math.sign(v);
+  let speed = Math.abs(v);
+  let pos = at;
+  // Out on the page, heading for the deck: does it get there?
+  if (pos <= ENTER || pos >= EXIT) {
+    const edge = dir > 0 ? ENTER : EXIT;
+    const toEdge = (edge - pos) * dir * STEP;
+    if (toEdge < 0 || speed * FRICTION <= toEdge) return pos + (dir * speed * FRICTION) / STEP;
+    speed -= toEdge / FRICTION;
+    pos = edge;
+  }
+  // In the deck: does it come to rest there, or carry out the other side?
+  const out = dir > 0 ? EXIT : ENTER;
+  const toOut = (out - pos) * dir * STEP;
+  if (speed * DRAG <= toOut) return pos + (dir * speed * DRAG) / STEP;
+  return out + (dir * (speed - toOut / DRAG) * FRICTION) / STEP;
+}
+
+/**
+ * The card a page thrown from `at` at `v` px/ms settles into, heading `heading` (1 on through the
+ * cards, -1 back, 0 neither), or null if it comes to rest outside the deck, where nothing pulls.
+ * Once it's more than `nudge` past a card the way it was heading, it goes on to the next.
+ */
+function cardFor(at: number, v: number, heading: number, nudge = NUDGE): number | null {
+  const end = landing(at, v);
+  if (end <= ENTER || end >= EXIT) return null;
+  if (end <= 0) return 0;
+  if (end >= CARDS.length - 1) return CARDS.length - 1;
+  const from = Math.floor(end);
+  const past = end - from;
+  if (heading > 0) return past > nudge ? from + 1 : from;
+  if (heading < 0) return 1 - past > nudge ? from : from + 1;
+  return Math.round(end);
+}
 
 /** How far through the cards the deck shows itself when scrolled to `at`: slower near each card, quicker between. */
 function linger(at: number) {
@@ -271,20 +322,148 @@ export function CardDeck({ className = "" }: { className?: string }) {
     }),
   );
 
-  // The browser does the scrolling and the snapping (the markers below); this follows along.
+  // While the deck is showing, a finger moves the whole page and a throw carries it on, with the
+  // forces above: friction everywhere, and in the deck more drag and a pull into a card. One set of
+  // physics for the page from top to bottom, so it scrolls the same way throughout.
   useEffect(() => {
     const trackEl = track.current;
     const stageEl = stage.current;
     if (!trackEl || !stageEl) return;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const trackTop = () => window.scrollY + trackEl.getBoundingClientRect().top;
+    /** Where the deck is, in cards: 0 the first card in front. The first card comes into focus as the stage sticks. */
+    const where = () => -trackEl.getBoundingClientRect().top / STEP - 0.6;
+    /** Whether the page moves by these physics: the deck is showing, motion is welcome, and the page isn't zoomed in. */
+    const active = () =>
+      !reduceMotion.matches && trackEl.offsetHeight > 0 && (window.visualViewport?.scale ?? 1) <= 1.01;
+
+    // The page in motion after a throw: where it is and how fast it's going (px/ms), and the scroll
+    // position of the card pulling it in, if any. `wrote` is the scroll position it last set, to
+    // notice the page being scrolled some other way meanwhile (the scrollbar, a screen reader).
+    let moving = 0;
+    let x = 0;
+    let v = 0;
+    let pull: number | null = null;
+    let top = 0;
+    let then = 0;
+    let wrote = 0;
+
+    const stop = () => {
+      cancelAnimationFrame(moving);
+      moving = 0;
+    };
+    const tick = (now: number) => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      let inside = false;
+      // 4ms steps, so the forces stay accurate whatever the frame rate.
+      for (let dt = Math.min(now - then, 50); dt > 0; dt -= 4) {
+        const h = Math.min(dt, 4);
+        const at = (x - top) / STEP - 0.6;
+        inside = at > ENTER && at < EXIT;
+        if (inside && pull !== null) {
+          v += (-PULL * PULL * (x - pull) - 2 * PULL * v) * h;
+          x += v * h;
+        } else {
+          const tau = inside ? DRAG : FRICTION;
+          const decay = Math.exp(-h / tau);
+          x += v * tau * (1 - decay);
+          v *= decay;
+        }
+        if (x <= 0 || x >= max) {
+          x = clamp(x, 0, max);
+          v = 0;
+        }
+      }
+      then = now;
+      const resting = Math.abs(v) < 0.02;
+      const done = inside && pull !== null ? resting && Math.abs(x - pull) < 0.5 : resting;
+      if (done && inside && pull !== null) x = pull;
+      window.scrollTo(0, x);
+      wrote = window.scrollY;
+      moving = done ? 0 : requestAnimationFrame(tick);
+    };
+    /** Sets the page moving from where it is at `speed` px/ms, pulled into `card` once it's in the deck. */
+    const launch = (speed: number, card: number | null) => {
+      stop();
+      top = trackTop();
+      x = window.scrollY;
+      v = speed;
+      pull = card === null ? null : top + (card + 0.6) * STEP;
+      then = performance.now();
+      wrote = x;
+      moving = requestAnimationFrame(tick);
+    };
+
+    // A finger moves the page 1:1, the browser's own scrolling held off. Letting go throws it at
+    // the finger's speed over its last 100ms. A second finger lets go of the page, so it can zoom;
+    // a finger in the focused email field moves its caret instead; taps go through as usual.
+    let drag: { y: number; scroll: number; from: number; moves: { t: number; y: number }[] } | null = null;
+    let touching = false;
+    const onTouchStart = (e: TouchEvent) => {
+      touching = true;
+      clearTimeout(settle);
+      drag = null;
+      if (e.touches.length !== 1 || !active()) return;
+      const field = e.target instanceof Element ? e.target.closest("input, textarea, select, [contenteditable]") : null;
+      if (field && field === document.activeElement) return;
+      stop(); // a finger catches the page in motion
+      const y = e.touches[0].clientY;
+      drag = { y, scroll: window.scrollY, from: where(), moves: [{ t: e.timeStamp, y }] };
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      if (!drag) return;
+      if (e.touches.length !== 1) {
+        drag = null;
+        return;
+      }
+      if (e.cancelable) e.preventDefault();
+      const y = e.touches[0].clientY;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      window.scrollTo(0, clamp(drag.scroll - (y - drag.y), 0, max));
+      drag.moves.push({ t: e.timeStamp, y });
+      while (drag.moves.length > 2 && e.timeStamp - drag.moves[0].t > 100) drag.moves.shift();
+    };
+    const onTouchEnd = (e: TouchEvent) => {
+      touching = e.touches.length > 0;
+      if (!drag) return settleSoon();
+      const { moves, from } = drag;
+      drag = null;
+      const first = moves[0];
+      const latest = moves[moves.length - 1];
+      // The page runs opposite the finger. A finger that stopped before lifting throws nothing.
+      const still = e.timeStamp - latest.t > 50 || latest.t === first.t;
+      const speed = still ? 0 : clamp((first.y - latest.y) / (latest.t - first.t), -8, 8);
+      const at = where();
+      launch(speed, cardFor(at, speed, Math.abs(speed) > 0.1 ? Math.sign(speed) : Math.sign(at - from)));
+    };
+
+    // Scrolling these physics don't drive (the wheel, the keys, the scrollbar) that stops between
+    // two cards is pulled into one too: on to the next the way it was going, unless it barely moved.
     let frame = 0;
+    let settle: number | undefined;
+    let last = NaN;
+    let heading = 0;
+    const settleSoon = () => {
+      clearTimeout(settle);
+      settle = window.setTimeout(() => {
+        if (moving || drag || touching || !active()) return;
+        const at = where();
+        if (at <= ENTER || at >= EXIT || Math.abs(at - Math.round(at)) < 0.02) return;
+        launch(0, cardFor(at, 0, heading, 0.05));
+      }, 120);
+    };
 
     const update = () => {
       frame = 0;
       if (!trackEl.offsetHeight) return; // hidden: the page is showing the cloud
-      // The first card comes into focus as the stage sticks, and each STEP after that the next.
-      setAt(clamp(-trackEl.getBoundingClientRect().top / STEP - 0.6, -1, CARDS.length));
+      const next = clamp(where(), -1, CARDS.length);
+      if (next !== last && !Number.isNaN(last)) heading = Math.sign(next - last);
+      last = next;
+      setAt(next);
     };
     const onScroll = () => {
+      if (moving && Math.abs(window.scrollY - wrote) > 2) stop(); // scrolled some other way: that wins
+      if (!moving && !drag) settleSoon();
       frame ||= requestAnimationFrame(update);
     };
     const resize = new ResizeObserver(([entry]) => {
@@ -299,10 +478,20 @@ export function CardDeck({ className = "" }: { className?: string }) {
 
     resize.observe(stageEl);
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove", onTouchMove, { passive: false });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    window.addEventListener("touchcancel", onTouchEnd, { passive: true });
     return () => {
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove", onTouchMove);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("touchcancel", onTouchEnd);
       resize.disconnect();
+      stop();
       cancelAnimationFrame(frame);
+      clearTimeout(settle);
     };
   }, []);
 
@@ -313,17 +502,8 @@ export function CardDeck({ className = "" }: { className?: string }) {
   const anyFocus = Math.max(...focus);
 
   return (
-    // data-deck-snap turns on the page's snapping while the deck is showing (globals.css).
-    <div
-      ref={track}
-      data-deck-snap
-      className={`relative ${className}`}
-      style={{ height: `calc(100svh + ${(CARDS.length + 1) * STEP}px)` }}
-    >
-      {/* Where the page can come to rest in the deck: the scroll position of each stop. */}
-      {STOPS.map((stop) => (
-        <div key={stop} aria-hidden className="absolute inset-x-0 h-0 snap-start" style={{ top: (stop + 0.6) * STEP }} />
-      ))}
+    // Tall enough for the stage to stay stuck from ENTER to EXIT.
+    <div ref={track} className={`relative ${className}`} style={{ height: `calc(100svh + ${(EXIT + 0.6) * STEP}px)` }}>
       <div ref={stage} className="sticky top-0 h-svh overflow-hidden [--u:1px]">
         <ul aria-label="What MercedTime does">
           {CARDS.map((card, i) => {
