@@ -4,7 +4,9 @@
  * Linked from the Chrome Web Store listing and the extension's first-run
  * disclosure, so it must stay public at this URL. The old address,
  * markwu.org/mercedtime/privacy, redirects here. Styling is in globals.css.
- * The text mirrors docs/privacy.md in the mercedtime repo; change both together.
+ * This page is the policy: the mercedtime repo keeps no copy of it. When the extension starts
+ * handling data differently, change this page, its in-app disclosure (src/pages/Disclosure.jsx
+ * there) and the store listing's privacy answers (store-assets/listing.md) together.
  */
 
 import type { Metadata } from 'next';
@@ -22,7 +24,7 @@ export default function MercedTimePrivacyPage() {
         <main className="doc">
             <div className="brand">Merced<span>Time</span></div>
             <h1>Privacy policy</h1>
-            <p className="updated">Last updated October 10, 2026 (version 1.0.1)</p>
+            <p className="updated">Last updated October 11, 2026 (version 1.1.0)</p>
 
             <p>
                 MercedTime is a Chrome extension for UC Merced students. It is an independent student project and is not
@@ -45,6 +47,11 @@ export default function MercedTimePrivacyPage() {
                 <li>Website content: the pages and data returned by reg-prod.ec.ucmerced.edu and ucmerced.uachieve.com.</li>
                 <li>
                     Page addresses: the extension sees when the browser opens UCM Registration’s menu page or returns from its sign-in, so it can open MercedTime. Addresses are not saved.
+                </li>
+                <li>
+                    Your programs: the names of your majors and minors, read from UCM Registration and sent to the
+                    developer’s requirements database to choose which degree requirements to download (see “What is
+                    shared”).
                 </li>
             </ul>
             <p>
@@ -90,16 +97,19 @@ export default function MercedTimePrivacyPage() {
 
             <h2>What is shared</h2>
             <p>
-                Nothing about you is sent to the developer or to any third party. The only copy that leaves your computer is
-                the plan and settings Chrome sync carries for you, as described above. The extension has no analytics, no
-                advertising, and no tracking.
+                Two things about you leave your computer: the plan and settings Chrome sync carries for you, as described
+                above, and the names of your majors and minors, as described below. Nothing else about you is sent to the
+                developer or to any third party. The extension has no analytics, no advertising, and no tracking.
             </p>
             <p>
-                The Degree page’s Roadmap needs the catalog’s degree requirements. When MercedTime opens, it downloads every
-                program’s requirements from a database the developer runs on Neon (neon.tech). The request asks for the
-                whole list and carries nothing about you: not your major, courses or name. Like any web request it reveals
-                your IP address to Neon. The Roadmap is then worked out on your computer. Data is not sold, not
-                transferred, and not used for anything other than showing it to you in the extension.
+                The Degree page’s Roadmap and the Plan board need your programs’ degree requirements, which the developer
+                keeps in a database on Neon (neon.tech). To find yours, MercedTime sends the database the names of your
+                majors and minors as UCM Registration lists them (for example, “Mechanical Engineering”), then downloads
+                the requirements for those programs and for General Education. Nothing else about you goes with the
+                request: not your name, student ID, courses or grades. MercedTime only reads from the database; it stores
+                nothing there. Like any web request, it reveals your IP address to Neon. The Roadmap is then worked out on
+                your computer. Data is not sold, not transferred, and not used for anything other than showing it to you
+                in the extension.
             </p>
 
             <h2>Limited Use disclosure</h2>
@@ -107,14 +117,15 @@ export default function MercedTimePrivacyPage() {
                 The use of information received from UCM Registration and My Degree Path will adhere to the Chrome Web Store User Data
                 Policy, including the Limited Use requirements. The data is used only to provide the extension’s single
                 purpose of showing you your catalog, schedule, plan and degree audit. It is not transferred to others,
-                except where required by law. It is not used for advertising. No person reads it. Your registrations, degree
-                audit and course history never leave your computer.
+                except where required by law. It is not used for advertising. No person reads it. The names of your majors
+                and minors go to the developer’s requirements database, hosted by Neon, only to choose which degree
+                requirements to download. Your registrations, degree audit and course history never leave your computer.
             </p>
 
             <h2>Removing your data</h2>
             <p>
                 Removing the extension from Chrome deletes the data saved on your computer. To delete the plan and settings
-                kept by Chrome sync, use Chrome’s own option to clear synced data. The data in UCM Registration and My Degree Path is not changed by the extension, except that “Run a new audit” asks My Degree Path to run an audit, the same as pressing
+                kept by Chrome sync, use Chrome’s own option to clear synced data. The data in UCM Registration and My Degree Path is not changed by the extension, except that “Rerun audit” asks My Degree Path to run an audit, the same as pressing
                 its own button.
             </p>
 

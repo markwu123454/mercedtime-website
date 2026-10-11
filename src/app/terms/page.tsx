@@ -2,8 +2,8 @@
  * MercedTime terms of use — mercedtime.com/terms
  *
  * Public at this URL, beside /privacy; the old address, markwu.org/mercedtime/terms,
- * redirects here. Styling is in globals.css. The text mirrors docs/terms.md in the
- * mercedtime repo; change both together.
+ * redirects here. Styling is in globals.css. This page is the terms: the mercedtime repo keeps
+ * no copy of them.
  */
 
 import type { Metadata } from 'next';
