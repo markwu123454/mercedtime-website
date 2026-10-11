@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 export default function MercedTimeTermsPage() {
     return (
-        <main>
+        <main className="doc">
             <div className="brand">Merced<span>Time</span></div>
             <h1>Terms of use</h1>
             <p className="updated">Last updated October 10, 2026</p>

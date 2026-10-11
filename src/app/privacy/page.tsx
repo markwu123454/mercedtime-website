@@ -19,7 +19,7 @@ const CONTACT = 'mark.wu123454@gmail.com';
 
 export default function MercedTimePrivacyPage() {
     return (
-        <main>
+        <main className="doc">
             <div className="brand">Merced<span>Time</span></div>
             <h1>Privacy policy</h1>
             <p className="updated">Last updated October 10, 2026 (version 1.0.1)</p>
