@@ -1,4 +1,5 @@
 import Image, { type StaticImageData } from "next/image";
+import SendLinkForm from "./components/send-link-form";
 import { storeUrl, type StoreSource } from "./site";
 import home from "@/assets/screenshots/home.png";
 import findClasses from "@/assets/screenshots/find-classes.png";
@@ -52,6 +53,12 @@ const POINTS = [
   },
 ];
 
+// Phones and tablets can't install Chrome extensions, so where the main pointer is a finger
+// (pointer: coarse) the store buttons give way to a form that emails the student the link.
+// It's CSS, so the right one shows from the first paint; a touchscreen laptop still counts as a
+// mouse. The site key is public: it names the Turnstile widget the form shows.
+const TURNSTILE_SITE_KEY = process.env.TURNSTILE_KEY!;
+
 function StoreButton({ source }: { source: StoreSource }) {
   return (
     <a
@@ -87,10 +94,11 @@ export default function Home() {
                 </li>
               ))}
             </ul>
-            <div className="mt-9 flex flex-wrap items-center gap-x-5 gap-y-3">
+            <div className="mt-9 flex flex-wrap items-center gap-x-5 gap-y-3 pointer-coarse:hidden">
               <StoreButton source="mercedtime-website-hero" />
               <span className="text-sm text-[#9fb0c6]">Free for UC Merced students</span>
             </div>
+            <SendLinkForm siteKey={TURNSTILE_SITE_KEY} className="mt-9 hidden max-w-md pointer-coarse:block" />
             <p className="mt-6 text-sm text-[#9fb0c6]">
               Uses your existing UC Merced sign-in · Your data stays in your browser
             </p>
@@ -147,7 +155,10 @@ export default function Home() {
             <p className="font-display text-4xl leading-none tracking-wide">
               Free for every UC Merced <span className="text-gold">student</span>
             </p>
-            <StoreButton source="mercedtime-website-bottom" />
+            <div className="pointer-coarse:hidden">
+              <StoreButton source="mercedtime-website-bottom" />
+            </div>
+            <SendLinkForm siteKey={TURNSTILE_SITE_KEY} className="hidden w-full max-w-md pointer-coarse:block" />
           </div>
         </div>
       </section>

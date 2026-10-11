@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { CONTACT, storeUrl } from "../site";
+import { storeUrl } from "../site";
 
 export default function Footer() {
   return (
-    <footer className="bg-navy-deep text-[#9fb0c6]">
+    // Instead of meeting the page in a hard line, the footer's navy fades in over the 3rem above it
+    // (the ::before), where every page has only its bottom padding.
+    <footer className="relative bg-navy-deep text-[#9fb0c6] before:pointer-events-none before:absolute before:inset-x-0 before:bottom-full before:h-12 before:bg-linear-to-b before:from-transparent before:to-navy-deep">
       <div className="mx-auto flex max-w-6xl flex-col gap-8 px-5 py-12 md:flex-row md:items-start md:justify-between">
         <div className="max-w-sm">
           <Link href="/" className="font-display text-3xl leading-none tracking-wide text-white">
@@ -17,7 +19,7 @@ export default function Footer() {
         <nav aria-label="Footer" className="grid grid-cols-2 gap-x-10 gap-y-2 text-sm">
           <a href={storeUrl("mercedtime-website-footer")} className="hover:text-white">Chrome Web Store</a>
           <Link href="/privacy" className="hover:text-white">Privacy policy</Link>
-          <a href={`mailto:${CONTACT}`} className="hover:text-white">Contact</a>
+          <Link href="/contact" className="hover:text-white">Contact</Link>
           <Link href="/terms" className="hover:text-white">Terms of use</Link>
         </nav>
       </div>

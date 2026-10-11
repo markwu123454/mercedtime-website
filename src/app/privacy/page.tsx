@@ -118,6 +118,26 @@ export default function MercedTimePrivacyPage() {
                 its own button.
             </p>
 
+            <h2>The mercedtime.com website</h2>
+            <p>
+                The website has no analytics, advertising or tracking. On a phone or tablet, which can’t install the
+                extension, it offers to email you the link so you can open it on your laptop. If you use that form:
+            </p>
+            <ul>
+                <li>The UC Merced address you enter is sent to Resend (resend.com), which delivers the email.</li>
+                <li>
+                    Cloudflare Turnstile checks that you’re not a bot. It loads only when you use the form, runs in your
+                    browser, and sends Cloudflare information about your browser and device.
+                </li>
+                <li>
+                    To limit how many emails go out, the developer’s database on Neon keeps a scrambled code made from your
+                    address, another made from your IP address, and the time. The codes can’t be turned back into your
+                    address or IP. After a day they are no longer used, and they are deleted the next time anyone uses the
+                    form.
+                </li>
+            </ul>
+            <p>Your address is used only to send that one email. It is not added to any list.</p>
+
             <h2>Terms</h2>
             <p>
                 Using MercedTime is also subject to its <a href="/terms">terms of use</a>.
