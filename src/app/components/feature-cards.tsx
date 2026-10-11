@@ -338,15 +338,13 @@ export function CardDeck({ className = "" }: { className?: string }) {
       !reduceMotion.matches && trackEl.offsetHeight > 0 && (window.visualViewport?.scale ?? 1) <= 1.01;
 
     // The page in motion after a throw: where it is and how fast it's going (px/ms), and the scroll
-    // position of the card pulling it in, if any. `wrote` is the scroll position it last set, to
-    // notice the page being scrolled some other way meanwhile (the scrollbar, a screen reader).
+    // position of the card pulling it in, if any. A touch, the wheel or a key stops it.
     let moving = 0;
     let x = 0;
     let v = 0;
     let pull: number | null = null;
     let top = 0;
     let then = 0;
-    let wrote = 0;
 
     const stop = () => {
       cancelAnimationFrame(moving);
@@ -379,7 +377,6 @@ export function CardDeck({ className = "" }: { className?: string }) {
       const done = inside && pull !== null ? resting && Math.abs(x - pull) < 0.5 : resting;
       if (done && inside && pull !== null) x = pull;
       window.scrollTo(0, x);
-      wrote = window.scrollY;
       moving = done ? 0 : requestAnimationFrame(tick);
     };
     /** Sets the page moving from where it is at `speed` px/ms, pulled into `card` once it's in the deck. */
@@ -390,13 +387,14 @@ export function CardDeck({ className = "" }: { className?: string }) {
       v = speed;
       pull = card === null ? null : top + (card + 0.6) * STEP;
       then = performance.now();
-      wrote = x;
       moving = requestAnimationFrame(tick);
     };
 
     // A finger moves the page 1:1, the browser's own scrolling held off. Letting go throws it at
     // the finger's speed over its last 100ms. A second finger lets go of the page, so it can zoom;
     // a finger in the focused email field moves its caret instead; taps go through as usual.
+    // The finger is timed with performance.now(): touch events' own timestamps aren't on one clock
+    // in every mobile browser, and a mismatch there reads as a finger that stopped, throwing nothing.
     let drag: { y: number; scroll: number; from: number; moves: { t: number; y: number }[] } | null = null;
     let touching = false;
     const onTouchStart = (e: TouchEvent) => {
@@ -408,7 +406,7 @@ export function CardDeck({ className = "" }: { className?: string }) {
       if (field && field === document.activeElement) return;
       stop(); // a finger catches the page in motion
       const y = e.touches[0].clientY;
-      drag = { y, scroll: window.scrollY, from: where(), moves: [{ t: e.timeStamp, y }] };
+      drag = { y, scroll: window.scrollY, from: where(), moves: [{ t: performance.now(), y }] };
     };
     const onTouchMove = (e: TouchEvent) => {
       if (!drag) return;
@@ -420,8 +418,9 @@ export function CardDeck({ className = "" }: { className?: string }) {
       const y = e.touches[0].clientY;
       const max = document.documentElement.scrollHeight - window.innerHeight;
       window.scrollTo(0, clamp(drag.scroll - (y - drag.y), 0, max));
-      drag.moves.push({ t: e.timeStamp, y });
-      while (drag.moves.length > 2 && e.timeStamp - drag.moves[0].t > 100) drag.moves.shift();
+      const now = performance.now();
+      drag.moves.push({ t: now, y });
+      while (drag.moves.length > 2 && now - drag.moves[0].t > 100) drag.moves.shift();
     };
     const onTouchEnd = (e: TouchEvent) => {
       touching = e.touches.length > 0;
@@ -430,8 +429,8 @@ export function CardDeck({ className = "" }: { className?: string }) {
       drag = null;
       const first = moves[0];
       const latest = moves[moves.length - 1];
-      // The page runs opposite the finger. A finger that stopped before lifting throws nothing.
-      const still = e.timeStamp - latest.t > 50 || latest.t === first.t;
+      // The page runs opposite the finger. A finger held still for 100ms before lifting throws nothing.
+      const still = performance.now() - latest.t > 100 || latest.t === first.t;
       const speed = still ? 0 : clamp((first.y - latest.y) / (latest.t - first.t), -8, 8);
       const at = where();
       launch(speed, cardFor(at, speed, Math.abs(speed) > 0.1 ? Math.sign(speed) : Math.sign(at - from)));
@@ -462,7 +461,6 @@ export function CardDeck({ className = "" }: { className?: string }) {
       setAt(next);
     };
     const onScroll = () => {
-      if (moving && Math.abs(window.scrollY - wrote) > 2) stop(); // scrolled some other way: that wins
       if (!moving && !drag) settleSoon();
       frame ||= requestAnimationFrame(update);
     };
@@ -482,7 +480,11 @@ export function CardDeck({ className = "" }: { className?: string }) {
     window.addEventListener("touchmove", onTouchMove, { passive: false });
     window.addEventListener("touchend", onTouchEnd, { passive: true });
     window.addEventListener("touchcancel", onTouchEnd, { passive: true });
+    window.addEventListener("wheel", stop, { passive: true });
+    window.addEventListener("keydown", stop);
     return () => {
+      window.removeEventListener("wheel", stop);
+      window.removeEventListener("keydown", stop);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchmove", onTouchMove);
