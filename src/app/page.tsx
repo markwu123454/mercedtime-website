@@ -1,5 +1,7 @@
+import Backdrop from "./components/backdrop";
 import SendLinkForm from "./components/send-link-form";
-import { CardCloud, CardDeck } from "./components/feature-cards";
+// The cards are turned off for now (see below); this brings them back.
+// import { CardCloud, CardDeck } from "./components/feature-cards";
 import { storeUrl, type StoreSource } from "./site";
 
 // Phones and tablets can't install Chrome extensions, so where the main pointer is a finger
@@ -22,20 +24,10 @@ function StoreButton({ source }: { source: StoreSource }) {
 
 export default function Home() {
   return (
-    // With a mouse the gradient runs down the page. On phones and tablets (compact:) it holds still
-    // behind it instead, so the deck's cards move over the same colours the whole way through.
-    <main className="relative isolate overflow-x-clip bg-[linear-gradient(160deg,var(--color-navy-light)_0%,var(--color-navy)_45%,var(--color-navy-deep)_100%)] text-white compact:bg-none">
-      <div
-        aria-hidden
-        className="pointer-events-none fixed inset-x-0 top-0 -z-10 hidden h-lvh bg-[linear-gradient(160deg,var(--color-navy-light)_0%,var(--color-navy)_30%,var(--color-navy-deep)_60%)] compact:block"
-      />
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 mx-auto hidden max-w-[1280px] md:block">
-        <div className="absolute top-[-260px] right-[-280px] size-[800px] rounded-full bg-[radial-gradient(circle,rgb(64_140_255/.28),rgb(64_140_255/0)_70%)]" />
-        <div className="absolute top-6 right-[254px] h-[60px] w-24 rounded-[10px] bg-white/5" />
-        <div className="absolute top-6 right-[144px] h-[120px] w-24 rounded-[10px] bg-white/5" />
-        <div className="absolute top-6 right-[34px] h-16 w-24 rounded-[10px] bg-gold/10" />
-        <div className="absolute top-[100px] right-[34px] h-[150px] w-24 rounded-[10px] bg-white/5" />
-      </div>
+    // The background holds still behind the whole screen, so it reaches the footer however short
+    // the page is (isolate keeps its -z-10 layer above the body's own background).
+    <main className="relative isolate overflow-x-clip text-white">
+      <Backdrop />
 
       <section className="relative flex flex-col items-start px-6 pt-[88px] pb-12 md:items-center md:px-16 md:pt-20 md:text-center">
         <div className="font-display text-[40px] leading-none tracking-[1px] md:text-[52px]">
@@ -53,12 +45,19 @@ export default function Home() {
           <span className="text-sm text-[#9fb0c6]">Free for UC Merced students</span>
         </div>
         <SendLinkForm siteKey={TURNSTILE_SITE_KEY} className="mt-7 hidden w-full max-w-md text-left md:mt-9 pointer-coarse:block" />
+        {/* Turned off with the cards below.
         <p className="mt-12 hidden font-display text-xl leading-none tracking-[.14em] text-[#9fb0c6] compact:block">
           What it does <span aria-hidden>↓</span>
         </p>
+        */}
       </section>
 
-      {/* mb-12 leaves the footer's fade (the 3rem above it) on empty background, not the lowest cards. */}
+      {/*
+        Turned off for now: the cards (a cloud to hover with a mouse, a deck to scroll through on
+        phones and tablets) and the closing section under them. To bring them back, uncomment this,
+        the "What it does" line above and the import at the top. The cloud's mb-12 leaves the
+        footer's fade (the 3rem above it) on empty background, not the lowest cards.
+
       <CardCloud className="mt-6 mb-12 compact:hidden" />
       <CardDeck className="hidden compact:block" />
 
@@ -73,6 +72,7 @@ export default function Home() {
           <SendLinkForm siteKey={TURNSTILE_SITE_KEY} className="mt-6 hidden pointer-coarse:block" />
         </div>
       </section>
+      */}
     </main>
   );
 }

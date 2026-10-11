@@ -6,6 +6,14 @@
   --color-navy: #0f2e53;
   --color-navy-deep: #081b33;
   --color-gold: #d8ac27;
+
+  /* The home page's background glows wandering, too slowly to draw the eye (components/backdrop.tsx). */
+  --animate-drift: drift 28s ease-in-out infinite alternate;
+  @keyframes drift {
+    to {
+      transform: translate3d(-8%, 6%, 0) scale(1.1);
+    }
+  }
 }
 
 /*
