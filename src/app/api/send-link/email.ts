@@ -1,6 +1,8 @@
 // The email the "email me the link" form sends (route.ts), as HTML and as plain text.
 // Email clients draw only tables and inline styles reliably, and classic Outlook draws with Word,
 // so the layout is tables and the [if mso] table pins the width Outlook ignores in max-width.
+// The button is the link itself, padding and all, so the whole pill can be clicked; classic
+// Outlook ignores padding on links, so it gets the same pill drawn in VML ([if mso]) instead.
 // Email can't load the site's Bebas Neue, so the wordmark is an image attached to the email
 // (wordmark.ts); if an email app still hides it, its alt text, sized to fit its box, shows instead.
 
@@ -47,15 +49,15 @@ export function linkEmail(store: string) {
 <meta name="supported-color-schemes" content="light">
 <title>Your MercedTime link</title>
 </head>
-<body style="margin:0;padding:0;background:#eef1f5;">
+<body style="margin:0;padding:0;">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;">${PREHEADER}</div>
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#eef1f5;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr>
-    <td align="center" style="padding:32px 16px;">
+    <td align="center" style="padding:16px;">
       <!--[if mso]><table role="presentation" width="520" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
-      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;background:#ffffff;border-radius:12px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;background:#ffffff;border:1px solid ${RULE};border-radius:12px;">
         <tr>
-          <td style="background:${NAVY};border-radius:12px 12px 0 0;padding:26px 32px;">
+          <td style="background:${NAVY};border-radius:11px 11px 0 0;padding:26px 32px;">
             <a href="${SITE}" style="text-decoration:none;"><img src="cid:wordmark" width="155" height="27" alt="MERCEDTIME" style="display:block;border:0;outline:none;font-family:${FONT};font-size:17px;line-height:27px;font-weight:700;letter-spacing:1px;color:#ffffff;"></a>
           </td>
         </tr>
@@ -63,13 +65,15 @@ export function linkEmail(store: string) {
           <td style="padding:32px 32px 28px;">
             <h1 style="margin:0 0 12px;font-family:${FONT};font-size:22px;line-height:30px;font-weight:700;color:${INK};">Here’s your link</h1>
             <p style="margin:0 0 24px;font-family:${FONT};font-size:16px;line-height:25px;color:${MUTED};">${INTRO}</p>
-            <table role="presentation" cellpadding="0" cellspacing="0" border="0">
-              <tr>
-                <td style="background:${GOLD};border-radius:999px;padding:14px 30px;">
-                  <a href="${store}" style="font-family:${FONT};font-size:16px;line-height:20px;font-weight:700;color:${NAVY_DEEP};text-decoration:none;">Add to Chrome &rarr;</a>
-                </td>
-              </tr>
-            </table>
+            <!--[if mso]>
+            <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="${store}" style="height:48px;v-text-anchor:middle;width:200px;" arcsize="50%" stroke="f" fillcolor="${GOLD}">
+              <w:anchorlock/>
+              <center style="color:${NAVY_DEEP};font-family:'Segoe UI',Arial,sans-serif;font-size:16px;font-weight:bold;">Add to Chrome &rarr;</center>
+            </v:roundrect>
+            <![endif]-->
+            <!--[if !mso]><!-->
+            <a href="${store}" style="display:inline-block;background:${GOLD};border-radius:999px;padding:14px 30px;font-family:${FONT};font-size:16px;line-height:20px;font-weight:700;color:${NAVY_DEEP};text-decoration:none;">Add to Chrome &rarr;</a>
+            <!--<![endif]-->
             <p style="margin:18px 0 0;font-family:${FONT};font-size:14px;line-height:22px;color:${MUTED};">Or go to <a href="${SITE}" style="color:${NAVY};text-decoration:underline;">mercedtime.com</a></p>
           </td>
         </tr>
