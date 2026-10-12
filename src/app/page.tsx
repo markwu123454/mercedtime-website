@@ -114,7 +114,7 @@ export default function Home() {
             <Feature
                 id="search"
                 title={<>Every class, <span className="text-gold">every seat</span></>}
-                text="Search the semester by course, title, instructor, or CRN. Each section shows its times, room, and open seats, kept up to date while you look."
+                text="Search the semester by course, title, instructor, or CRN."
                 note="Try it: these are this semester’s real classes."
                 demo={<ClassSearch/>}
             />
@@ -123,7 +123,7 @@ export default function Home() {
                 id="plan"
                 flip
                 title={<>Every semester, <span className="text-gold">side by side</span></>}
-                text="Lay out each semester from now to graduation. Move a course and the units add up again, with a warning when a semester gets too light or too heavy."
+                text="Lay out each semester from now to graduation."
                 note="Try it: drag a course to another semester."
                 demo={<PlanBoard/>}
             />
@@ -131,8 +131,8 @@ export default function Home() {
             <Feature
                 id="schedules"
                 title={<>Every schedule <span className="text-gold">that fits</span></>}
-                text="Pick your courses and say what matters to you, like no early mornings or a free lunch hour. MercedTime works out every way to take them without a clash, best first."
-                note="Worked out from this semester’s real sections."
+                text="Pick your courses and say what matters to you. MercedTime works out every way to take them without a clash, best first."
+                note=""
                 demo={<SchedulePick/>}
             />
 
@@ -140,7 +140,7 @@ export default function Home() {
                 id="calendar"
                 flip
                 title={<>Your week, <span className="text-gold">ready to go</span></>}
-                text="See your classes, the free time between them, and when the dining halls are open. Then add the whole semester to Google Calendar, Apple Calendar, or Outlook."
+                text="See your classes, the free time between them, and when the dining halls are open."
                 note="Try it: switch things on and off."
                 demo={<ScheduleCalendar/>}
             />
@@ -149,7 +149,7 @@ export default function Home() {
                 id="degree"
                 title={<>See what&apos;s left <span className="text-gold">to graduate</span></>}
                 text="Your major, minor, and GE requirements, with every course marked done, taking, planned, or not yet. Plan ahead and see what your plan would finish."
-                note="An example student. My Degree Path stays your official record."
+                note="My Degree Path stays your official record."
                 demo={<DegreeProgress/>}
             />
 
