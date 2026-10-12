@@ -65,3 +65,70 @@
   .doc li + li { margin-top: 6px; }
   .doc a { color: var(--accent); text-decoration: underline; }
 }
+
+/*
+ * The home page's demos, drawn as the extension draws itself: IBM Carbon (v11 White theme), its
+ * tokens copied from the mercedtime repo's src/styles/tokens.css and its parts from app.css. Square
+ * corners inside (the window itself is rounded, as a showcase), 1px rules, fields filled gray-10
+ * with a bottom rule, tags as small tinted boxes. Like the extension, not a copy of it. The
+ * fonts are the extension's own stack: Plex where installed, else the system's (Segoe UI on Windows).
+ */
+@layer components {
+  .cds {
+    --gray-10: #f4f4f4; --gray-20: #e0e0e0; --gray-30: #c6c6c6; --gray-50: #8d8d8d; --gray-60: #6f6f6f; --gray-70: #525252; --gray-100: #161616;
+    --blue-10: #edf5ff; --blue-20: #d0e2ff; --blue-60: #0f62fe; --blue-70: #0043ce;
+    --green-10: #defbe6; --green-50: #24a148; --green-text: #0e6027;
+    --yellow-10: #fcf4d6; --yellow-30: #f1c21b; --yellow-70: #8e6a00;
+    --red-10: #fff1f1; --red-60: #da1e28; --red-text: #a2191f;
+    --layer-hover: #e8e8e8;
+    --font-sans: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+    background: #fff; color: var(--gray-100);
+    font-family: var(--font-sans); font-size: 14px; line-height: 18px; letter-spacing: .16px;
+    text-align: left;
+    box-shadow: 0 24px 60px -12px rgb(0 0 0 / .55), 0 0 0 1px rgb(255 255 255 / .08);
+    border-radius: 12px; overflow: hidden;
+  }
+  .cds :where(a, button, input, select):focus-visible { outline: 2px solid var(--blue-60); outline-offset: -2px; }
+
+  /* the app's top bar: the wordmark, then a tab per page, the current one underlined */
+  .cds-masthead { display: flex; align-items: stretch; height: 48px; border-bottom: 1px solid var(--gray-20); }
+  .cds-brand { display: flex; align-items: center; padding: 6px 12px 0 16px; font-family: var(--font-bebas), Impact, sans-serif; font-size: 30px; line-height: 1; letter-spacing: .5px; color: #0f2e53; }
+  .cds-brand span { color: #d8ac27; }
+  .cds-tab { display: flex; align-items: center; padding: 0 16px; color: var(--gray-70); border-bottom: 3px solid transparent; white-space: nowrap; }
+  .cds-tab[aria-current] { color: var(--gray-100); border-bottom-color: var(--blue-60); }
+  @media (width < 40rem) { .cds-tab:not([aria-current]) { display: none; } }
+
+  .cds-toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 16px; background: var(--gray-10); border-bottom: 1px solid var(--gray-20); }
+  .cds-field { height: 32px; padding: 0 8px; background: #fff; color: var(--gray-100); border: 0; border-bottom: 1px solid var(--gray-50); font: inherit; font-size: 16px; border-radius: 0; min-width: 0; }
+  @media (width >= 40rem) { .cds-field { font-size: 14px; } }
+  .cds-field:hover { background: var(--layer-hover); }
+  .cds-button { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; background: #fff; border: 0; border-bottom: 1px solid var(--gray-50); color: var(--gray-100); font: inherit; cursor: pointer; white-space: nowrap; }
+  .cds-button:hover { background: var(--layer-hover); }
+  .cds-ghost { background: none; border: 0; padding: 0; color: var(--blue-60); font: inherit; cursor: pointer; }
+  .cds-ghost:hover { color: var(--blue-70); text-decoration: underline; }
+  .cds-code { font-family: var(--font-mono); font-weight: 600; }
+  .cds-label { font-size: 12px; line-height: 16px; letter-spacing: .32px; color: var(--gray-70); }
+
+  /* seats: a dot and a count in a tinted box */
+  .cds-tag { display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 8px; font-size: 12px; letter-spacing: .32px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .cds-tag::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .cds-tag-open { background: var(--green-10); color: var(--green-text); }
+  .cds-tag-low { background: var(--yellow-10); color: var(--yellow-70); }
+  .cds-tag-full { background: var(--red-10); color: var(--red-text); }
+
+  /* Carbon's small toggle: a pill, its one round shape */
+  .cds-switch { appearance: none; flex: none; position: relative; margin: 0; cursor: pointer; width: 32px; height: 16px; border-radius: 8px; background: var(--gray-50); transition: background 70ms cubic-bezier(.2, 0, .38, .9); }
+  .cds-switch::before { content: ''; position: absolute; top: 3px; left: 3px; width: 10px; height: 10px; border-radius: 50%; background: #fff; transition: transform 70ms cubic-bezier(.2, 0, .38, .9); }
+  .cds-switch:checked { background: var(--blue-60); }
+  .cds-switch:checked::before { transform: translateX(16px); }
+
+  /* requirement chips, by status: done, taking (dashed), planned, not yet */
+  .cds-chip { display: inline-flex; align-items: center; height: 20px; padding: 0 8px; font-family: var(--font-mono); font-size: 12px; white-space: nowrap; }
+  .cds-chip-done { background: var(--green-10); color: var(--green-text); }
+  .cds-chip-ip { background: #fff; color: var(--green-text); outline: 1px dashed var(--green-50); outline-offset: -1px; }
+  .cds-chip-plan { background: var(--blue-10); color: var(--blue-70); }
+  .cds-chip-todo { background: var(--gray-20); color: var(--gray-70); }
+
+  @media (prefers-reduced-motion: reduce) { .cds *, .cds *::before { transition: none !important; animation: none !important; } }
+}

@@ -32,7 +32,7 @@ type Card = {
 const CARDS: Card[] = [
   {
     title: "Class details, one panel",
-    desc: "Add a section to a future semester, watch it for seats, and see its waitlist, final exam and description.",
+    desc: "Add a section to a future semester, watch it for seats, and see its waitlist, final exam, and description.",
     shot: findClasses,
     crop: [942, 112, 320, 370, 0.81],
     cloud: [48, 20, -3],
@@ -64,7 +64,7 @@ const CARDS: Card[] = [
   },
   {
     title: "Every course, color-coded",
-    desc: "Done, taking, planned or not yet, on every course in your degree.",
+    desc: "Done, taking, planned, or not yet, on every course in your degree.",
     shot: degree,
     crop: [640, 102, 275, 26, 1.2],
     cloud: [340, 262, 2],
@@ -96,7 +96,7 @@ const CARDS: Card[] = [
   },
   {
     title: "A checklist before you register",
-    desc: "Units, sections picked, open seats and holds, checked before your registration time.",
+    desc: "Units, sections picked, open seats, and holds, checked before your registration time.",
     shot: home,
     crop: [905, 252, 358, 252, 0.8],
     cloud: [40, 430, 2],

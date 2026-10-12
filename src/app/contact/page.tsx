@@ -10,7 +10,7 @@ import {CONTACT} from "../site";
 
 export const metadata: Metadata = {
     title: "Contact MercedTime",
-    description: "Email the developer of MercedTime for help, bug reports and ideas.",
+    description: "Email the developer of MercedTime for help, bug reports, and ideas.",
     alternates: {canonical: "/contact"},
 };
 

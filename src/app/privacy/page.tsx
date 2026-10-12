@@ -39,7 +39,7 @@ export default function MercedTimePrivacyPage() {
             <p>
                 Each semester’s classes, their open seats, which courses must be taken together (corequisites, such as a
                 course and its lab), and the degree requirements for the Roadmap come from MercedTime’s server
-                (api.mercedtime.com). The server copies the classes, seats and corequisites from UCM Registration’s
+                (api.mercedtime.com). The server copies the classes, seats, and corequisites from UCM Registration’s
                 public class search, the part anyone can see without signing in. When the server does not answer, the
                 extension reads classes and seats from UCM Registration instead.
             </p>
@@ -48,12 +48,12 @@ export default function MercedTimePrivacyPage() {
             <h2>Data types handled</h2>
             <ul>
                 <li>
-                    Personal academic information: your registrations, registration status, degree audit and course
+                    Personal academic information: your registrations, registration status, degree audit, and course
                     history, read from UCM Registration and My Degree Path.
                 </li>
                 <li>
                     Website content: the pages and data returned by reg-prod.ec.ucmerced.edu and ucmerced.uachieve.com, and
-                    the classes, seats and degree requirements from api.mercedtime.com.
+                    the classes, seats, and degree requirements from api.mercedtime.com.
                 </li>
                 <li>
                     Page addresses: the extension sees when the browser opens UCM Registration’s menu page or returns from its sign-in, so it can open MercedTime. Addresses are not saved.
@@ -130,9 +130,9 @@ export default function MercedTimePrivacyPage() {
                 </li>
             </ul>
             <p>
-                No request to the server carries your cookies, name, student ID, courses or grades. Like any web request,
+                No request to the server carries your cookies, name, student ID, courses, or grades. Like any web request,
                 they reveal your IP address to Vercel; MercedTime’s database does not store it. The server stores nothing
-                about you: only the degree requirements, and the public class lists, seat counts and corequisites it reads
+                about you: only the degree requirements, and the public class lists, seat counts, and corequisites it reads
                 from UCM Registration. The Roadmap is
                 worked out on your computer. Data is not sold, not transferred, and not used for anything other than
                 showing it to you in the extension.
@@ -148,10 +148,10 @@ export default function MercedTimePrivacyPage() {
             <p>
                 The use of information received from UCM Registration and My Degree Path will adhere to the Chrome Web Store User Data
                 Policy, including the Limited Use requirements. The data is used only to provide the extension’s single
-                purpose of showing you your catalog, schedule, plan and degree audit. It is not transferred to others,
+                purpose of showing you your catalog, schedule, plan, and degree audit. It is not transferred to others,
                 except where required by law. It is not used for advertising. No person reads it. Which programs’ degree
                 requirements you need is revealed to MercedTime’s server only to download those requirements. Your
-                registrations, degree audit, course history and the names of your programs never leave your computer.
+                registrations, degree audit, course history, and the names of your programs never leave your computer.
             </p>
 
             <h2>Removing your data</h2>
@@ -164,7 +164,7 @@ export default function MercedTimePrivacyPage() {
 
             <h2>The mercedtime.com website</h2>
             <p>
-                The website has no analytics, advertising or tracking. On a phone or tablet, which can’t install the
+                The website has no analytics, advertising, or tracking. On a phone or tablet, which can’t install the
                 extension, it offers to email you the link so you can open it on your laptop. If you use that form:
             </p>
             <ul>

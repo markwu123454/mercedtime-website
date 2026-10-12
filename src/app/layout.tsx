@@ -11,9 +11,9 @@ const bebas = localFont({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://mercedtime.com"),
-  title: "MercedTime",
+  title: "MercedTime · Your UC Merced plan, from now to graduation",
   description:
-    "Search UC Merced classes, build schedules around your preferences, and track your degree progress, all in one place.",
+    "Build your next schedule, plan ahead, and see what's left for your major, minor, and GEs.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
