@@ -24,7 +24,7 @@ export default function MercedTimePrivacyPage() {
         <main className="doc">
             <div className="brand">Merced<span>Time</span></div>
             <h1>Privacy policy</h1>
-            <p className="updated">Last updated October 11, 2026 (version 1.1.0)</p>
+            <p className="updated">Last updated October 12, 2026 (version 1.1.1)</p>
 
             <p>
                 MercedTime is a Chrome extension for UC Merced students. It is an independent student project and is not
@@ -34,7 +34,14 @@ export default function MercedTimePrivacyPage() {
             <h2>What the extension does with data</h2>
             <p>
                 The extension reads pages and data from UCM Registration (reg-prod.ec.ucmerced.edu) and My Degree Path (ucmerced.uachieve.com) using the sign-in you already have in your browser, and shows it to you in its own
-                page. It reads your registrations, registration status, course catalog, and degree audit.
+                page. It reads your registrations, registration status, and degree audit.
+            </p>
+            <p>
+                Each semester’s classes, their open seats, which courses must be taken together (corequisites, such as a
+                course and its lab), and the degree requirements for the Roadmap come from MercedTime’s server
+                (api.mercedtime.com). The server copies the classes, seats and corequisites from UCM Registration’s
+                public class search, the part anyone can see without signing in. When the server does not answer, the
+                extension reads classes and seats from UCM Registration instead.
             </p>
             <p>MercedTime never sees or stores your password. Sign-in happens on the university’s own pages.</p>
 
@@ -44,14 +51,17 @@ export default function MercedTimePrivacyPage() {
                     Personal academic information: your registrations, registration status, degree audit and course
                     history, read from UCM Registration and My Degree Path.
                 </li>
-                <li>Website content: the pages and data returned by reg-prod.ec.ucmerced.edu and ucmerced.uachieve.com.</li>
+                <li>
+                    Website content: the pages and data returned by reg-prod.ec.ucmerced.edu and ucmerced.uachieve.com, and
+                    the classes, seats and degree requirements from api.mercedtime.com.
+                </li>
                 <li>
                     Page addresses: the extension sees when the browser opens UCM Registration’s menu page or returns from its sign-in, so it can open MercedTime. Addresses are not saved.
                 </li>
                 <li>
-                    Your programs: the names of your majors and minors, read from UCM Registration and sent to the
-                    developer’s requirements database to choose which degree requirements to download (see “What is
-                    shared”).
+                    Your programs: the names of your majors and minors, read from UCM Registration and matched on your
+                    computer to choose which degree requirements to download. The names are not sent anywhere (see “What
+                    is shared”).
                 </li>
             </ul>
             <p>
@@ -64,12 +74,14 @@ export default function MercedTimePrivacyPage() {
                 MercedTime can notify you when a new semester is posted, a day before and when your
                 registration time opens, and when a course you watch fills up or gets an open seat. To do this it
                 checks UCM Registration’s public list of semesters every two hours while Chrome is
-                running, even when MercedTime isn’t open. For each course you watch, it also asks UCM
-                Registration how many seats the course’s sections have: every two hours, and every ten
-                minutes while your registration window is open. These requests carry only the semester
-                and the course’s section numbers (CRNs); they do not send your cookies or anything about
-                you. Registration reminders are worked out on your computer from the registration time
-                MercedTime last read. You can turn notifications off in Settings.
+                running, even when MercedTime isn’t open. For each semester with a course you watch, it also
+                asks MercedTime’s server for that semester’s open seats: every two hours, and every ten minutes
+                while your registration window is open. That request names only the semester. If the server
+                does not answer, it asks UCM Registration how many seats each of the course’s sections has
+                instead; those requests carry only the semester and the sections’ numbers (CRNs). None of
+                these requests send your cookies or anything about you. Registration reminders are worked out
+                on your computer from the registration time MercedTime last read. You can choose which
+                notifications you get, or turn them all off, in Settings.
             </p>
 
             <h2>What is stored</h2>
@@ -98,18 +110,38 @@ export default function MercedTimePrivacyPage() {
             <h2>What is shared</h2>
             <p>
                 Two things about you leave your computer: the plan and settings Chrome sync carries for you, as described
-                above, and the names of your majors and minors, as described below. Nothing else about you is sent to the
-                developer or to any third party. The extension has no analytics, no advertising, and no tracking.
+                above, and which programs’ degree requirements you download, as described below. Nothing else about you is
+                sent to the developer or to any third party. The extension has no analytics, no advertising, and no
+                tracking.
             </p>
             <p>
-                The Degree page’s Roadmap and the Plan board need your programs’ degree requirements, which the developer
-                keeps in a database on Neon (neon.tech). To find yours, MercedTime sends the database the names of your
-                majors and minors as UCM Registration lists them (for example, “Mechanical Engineering”), then downloads
-                the requirements for those programs and for General Education. Nothing else about you goes with the
-                request: not your name, student ID, courses or grades. MercedTime only reads from the database; it stores
-                nothing there. Like any web request, it reveals your IP address to Neon. The Roadmap is then worked out on
-                your computer. Data is not sold, not transferred, and not used for anything other than showing it to you
-                in the extension.
+                MercedTime’s server (api.mercedtime.com) is run by the developer. It is hosted by Vercel (vercel.com), and
+                its data is kept in a database on Neon (neon.tech). The extension asks it for:
+            </p>
+            <ul>
+                <li>a semester’s classes and open seats: the request names only the semester;</li>
+                <li>which courses are corequisites, for every course at once: the request carries nothing;</li>
+                <li>the list of all degree requirements: the request carries nothing;</li>
+                <li>
+                    the requirements for your programs and for General Education: the Degree page’s Roadmap and the Plan
+                    board need them. Your majors and minors are matched against the list on your computer, and only the
+                    matching requirements are requested, so the server can tell which programs’ requirements were asked
+                    for, but not by whom. The names themselves are never sent.
+                </li>
+            </ul>
+            <p>
+                No request to the server carries your cookies, name, student ID, courses or grades. Like any web request,
+                they reveal your IP address to Vercel; MercedTime’s database does not store it. The server stores nothing
+                about you: only the degree requirements, and the public class lists, seat counts and corequisites it reads
+                from UCM Registration. The Roadmap is
+                worked out on your computer. Data is not sold, not transferred, and not used for anything other than
+                showing it to you in the extension.
+            </p>
+            <p>
+                Versions of the extension before 1.1.1 worked differently in two ways. They sent the names of your majors
+                and minors as UCM Registration lists them (for example, “Mechanical Engineering”) to the developer’s
+                requirements database on Neon, to choose which requirements to download; nothing else about you went with
+                them. And they read classes and seats from UCM Registration only.
             </p>
 
             <h2>Limited Use disclosure</h2>
@@ -117,15 +149,16 @@ export default function MercedTimePrivacyPage() {
                 The use of information received from UCM Registration and My Degree Path will adhere to the Chrome Web Store User Data
                 Policy, including the Limited Use requirements. The data is used only to provide the extension’s single
                 purpose of showing you your catalog, schedule, plan and degree audit. It is not transferred to others,
-                except where required by law. It is not used for advertising. No person reads it. The names of your majors
-                and minors go to the developer’s requirements database, hosted by Neon, only to choose which degree
-                requirements to download. Your registrations, degree audit and course history never leave your computer.
+                except where required by law. It is not used for advertising. No person reads it. Which programs’ degree
+                requirements you need is revealed to MercedTime’s server only to download those requirements. Your
+                registrations, degree audit, course history and the names of your programs never leave your computer.
             </p>
 
             <h2>Removing your data</h2>
             <p>
                 Removing the extension from Chrome deletes the data saved on your computer. To delete the plan and settings
-                kept by Chrome sync, use Chrome’s own option to clear synced data. The data in UCM Registration and My Degree Path is not changed by the extension, except that “Rerun audit” asks My Degree Path to run an audit, the same as pressing
+                kept by Chrome sync, use Chrome’s own option to clear synced data. MercedTime’s server keeps nothing about
+                you, so there is nothing of yours there to delete. The data in UCM Registration and My Degree Path is not changed by the extension, except that “Rerun audit” asks My Degree Path to run an audit, the same as pressing
                 its own button.
             </p>
 
