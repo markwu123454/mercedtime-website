@@ -89,6 +89,10 @@ export default function Backdrop() {
         <Blocks blocks={NARROW} className="md:hidden" />
       </div>
       <div className="absolute inset-0 opacity-[.05]" style={{ backgroundImage: GRAIN }} />
+      {/* Phones: above the backdrop the browser shows the page's own navy-deep (under the status
+          bar, and on overscroll), so the backdrop's top fades in from it rather than starting at a
+          hard line. */}
+      <div className="absolute inset-x-0 top-0 h-32 bg-linear-to-b from-navy-deep to-transparent md:hidden" />
     </div>
   );
 }
