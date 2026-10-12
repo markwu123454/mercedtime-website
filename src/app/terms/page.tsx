@@ -7,12 +7,13 @@
  */
 
 import type { Metadata } from 'next';
+import { pageMetadata } from '../seo';
 
-export const metadata: Metadata = {
-    title: 'MercedTime terms of use',
-    description: 'The terms for using the MercedTime Chrome extension.',
-    alternates: { canonical: '/terms' },
-};
+export const metadata: Metadata = pageMetadata(
+    'MercedTime terms of use',
+    'The terms for using the MercedTime Chrome extension.',
+    '/terms',
+);
 
 export default function MercedTimeTermsPage() {
     return (

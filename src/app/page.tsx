@@ -8,6 +8,7 @@ import SchedulePick from "./components/schedule-pick";
 import SendLinkForm from "./components/send-link-form";
 // The cards are turned off for now (see below); this brings them back.
 // import { CardCloud, CardDeck } from "./components/feature-cards";
+import {NAME, SITE} from "./seo";
 import {storeUrl, type StoreSource} from "./site";
 
 // Phones and tablets can't install Chrome extensions, so where the main pointer is a finger
@@ -58,12 +59,27 @@ function Feature({id, title, text, note, demo, flip = false}: {
     );
 }
 
+// For search engines: what MercedTime is, as schema.org describes a free app.
+const STRUCTURED = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: NAME,
+    url: SITE,
+    description: "A free Chrome extension for UC Merced students: search classes, plan semesters, pick a schedule, and track degree progress.",
+    applicationCategory: "EducationalApplication",
+    operatingSystem: "Chrome",
+    image: `${SITE}/og.png`,
+    downloadUrl: storeUrl("mercedtime-website-hero"),
+    offers: {"@type": "Offer", price: "0", priceCurrency: "USD"},
+};
+
 export default function Home() {
     return (
         // The background holds still behind the whole screen, so it reaches the footer however short
         // the page is (isolate keeps its -z-10 layer above the body's own background).
         <main className="relative isolate overflow-x-clip text-white">
             <Backdrop/>
+            <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(STRUCTURED)}}/>
 
             {/* The hero fills the first screen, whatever its height; the steps start below it. */}
             <section

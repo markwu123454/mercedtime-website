@@ -9,14 +9,15 @@
 import type {Metadata} from "next";
 import Link from "next/link";
 import Backdrop from "../components/backdrop";
+import {pageMetadata} from "../seo";
 import {CONTACT} from "../site";
 import CopyAddress from "./copy-address";
 
-export const metadata: Metadata = {
-    title: "Contact MercedTime",
-    description: "Email the developer of MercedTime for help, bug reports, and ideas.",
-    alternates: {canonical: "/contact"},
-};
+export const metadata: Metadata = pageMetadata(
+    "Contact MercedTime",
+    "Email the developer of MercedTime for help, bug reports, and ideas.",
+    "/contact",
+);
 
 const REASONS = [
     ["Get help", "Something isn’t working the way you expect.", "MercedTime: help"],

@@ -10,12 +10,13 @@
  */
 
 import type { Metadata } from 'next';
+import { pageMetadata } from '../seo';
 
-export const metadata: Metadata = {
-    title: 'MercedTime privacy policy',
-    description: 'What the MercedTime Chrome extension reads, what it stores, and what it shares.',
-    alternates: { canonical: '/privacy' },
-};
+export const metadata: Metadata = pageMetadata(
+    'MercedTime privacy policy',
+    'What the MercedTime Chrome extension reads, what it stores, and what it shares.',
+    '/privacy',
+);
 
 const CONTACT = 'mark.wu123454@gmail.com';
 

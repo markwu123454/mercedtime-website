@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import Footer from "./components/footer";
+import { NAME, pageMetadata, SITE } from "./seo";
 import "./globals.css";
 
 // The extension's own wordmark font (public/fonts/bebas-neue.woff2 in the mercedtime repo).
@@ -9,12 +10,25 @@ const bebas = localFont({
   variable: "--font-bebas",
 });
 
+// The home page's, and the defaults for the rest (each page sets its own through seo.ts).
 export const metadata: Metadata = {
-  metadataBase: new URL("https://mercedtime.com"),
-  title: "MercedTime · Your UC Merced plan, from now to graduation",
-  description:
-    "Build your next schedule, plan ahead, and see what's left for your major, minor, and GEs.",
+  metadataBase: new URL(SITE),
+  applicationName: NAME,
+  ...pageMetadata(
+    "MercedTime · Your UC Merced plan, from now to graduation",
+    "A free Chrome extension for UC Merced students. Build your next schedule, plan ahead, and see what's left for your major, minor, and GEs.",
+    "/",
+  ),
+  keywords: [
+    "UC Merced", "UCM", "class schedule", "schedule builder", "course planner", "degree progress",
+    "registration", "open seats", "Chrome extension",
+  ],
+  category: "education",
+  robots: { index: true, follow: true },
 };
+
+// The navy of the footer and the home page's backdrop, for the phone's browser bar.
+export const viewport: Viewport = { themeColor: "#081b33" };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
