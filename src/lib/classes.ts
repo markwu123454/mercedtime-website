@@ -28,6 +28,8 @@ export type Section = {
 };
 
 export type Classes = {
+  /** Banner's term code, "202710" */
+  code: string;
   /** "Spring 2027" */
   term: string;
   /** When the seat counts were read, epoch ms. */
@@ -60,3 +62,15 @@ export const squash = (v: string) => v.toLowerCase().replace(/\s+/g, "");
 
 /** "MATH 021" -> "math21", so a search for "math 21" finds it. */
 export const looseCourse = (course: string) => squash(course).replace(/(\D)0+(\d)/, "$1$2");
+
+/** "Spring 2027" -> "spring-2027", a semester in the site's addresses. */
+export const termSlug = (term: string) => term.toLowerCase().replace(/\s+/g, "-");
+
+/** ("Spring 2027", "MATH 021") -> "/classes/spring-2027/math/021", the course's page for that semester. */
+export const coursePath = (term: string, course: string) => `/classes/${termSlug(term)}/${course.toLowerCase().replace(" ", "/")}`;
+
+/** A course's lectures first, then the rest, each in time order, as the extension lists them. */
+export function bySection(a: Section, b: Section) {
+  const order = (s: Section) => (s.link.startsWith("A") || !s.link ? 0 : 1);
+  return order(a) - order(b) || (a.meets[0]?.start ?? 1e4) - (b.meets[0]?.start ?? 1e4) || a.crn.localeCompare(b.crn);
+}

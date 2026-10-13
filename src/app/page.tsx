@@ -6,28 +6,17 @@ import ScheduleCalendar from "./components/schedule-calendar";
 import PlanBoard from "./components/plan-board";
 import SchedulePick from "./components/schedule-pick";
 import SendLinkForm from "./components/send-link-form";
+import StoreButton from "./components/store-button";
 // The cards are turned off for now (see below); this brings them back.
 // import { CardCloud, CardDeck } from "./components/feature-cards";
 import {NAME, SITE} from "./seo";
-import {storeUrl, type StoreSource} from "./site";
+import {storeUrl} from "./site";
 
 // Phones and tablets can't install Chrome extensions, so where the main pointer is a finger
 // (pointer: coarse) the store buttons give way to a form that emails the student the link.
 // It's CSS, so the right one shows from the first paint; a touchscreen laptop still counts as a
 // mouse. The site key is public: it names the Turnstile widget the form shows.
 const TURNSTILE_SITE_KEY = process.env.TURNSTILE_KEY!;
-
-function StoreButton({source}: { source: StoreSource }) {
-    return (
-        <a
-            href={storeUrl(source)}
-            className="inline-flex items-center gap-2 rounded-full bg-gold px-6 py-3 font-semibold text-navy-deep shadow-lg shadow-black/20 transition hover:brightness-110"
-        >
-            Add to Chrome
-            <span aria-hidden>→</span>
-        </a>
-    );
-}
 
 const STEPS = [
     ["Add it to Chrome", "Free from the Chrome Web Store, on any computer with Chrome."],
