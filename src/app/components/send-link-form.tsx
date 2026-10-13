@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
-import { parseNetid, type SendLinkEvent } from "../api/send-link/shared";
+import { parseNetid, SEND_LINK_URL, type SendLinkEvent } from "./send-link";
 
 // What phones and tablets get in place of Add to Chrome, since they can't install extensions: the
-// student types their school email and POST /api/send-link sends them the link to open on their
-// laptop. One status line under the button follows the request, its spinner turning to a check
-// at "Sent to ..."; an error takes the line's place:
+// student types their school email and the API (POST /v1/send-link on api.mercedtime.com,
+// send-link.ts) sends them the link to open on their laptop. One status line under the button
+// follows the request, its spinner turning to a check at "Sent to ..."; an error takes the
+// line's place:
 //   Preparing your email    until the server has checked Turnstile, the address and the limits
 //   Processing your email   until Resend has taken the email
 //   Sending your email      five seconds more, so the email has usually landed when it says Sent
@@ -321,7 +322,7 @@ export default function SendLinkForm({ siteKey, className }: { siteKey: string; 
       if (widget.current) window.turnstile?.reset(widget.current);
       if (!turnstileToken) return fail("failed");
 
-      const res = await fetch("/api/send-link", {
+      const res = await fetch(SEND_LINK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ netid: id, token: turnstileToken }),

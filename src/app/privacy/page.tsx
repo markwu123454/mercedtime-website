@@ -177,8 +177,8 @@ export default function MercedTimePrivacyPage() {
                 <li>
                     To limit how many emails go out, the developer’s database on Neon keeps a scrambled code made from your
                     address, another made from your IP address, and the time. The codes can’t be turned back into your
-                    address or IP. After a day they are no longer used, and they are deleted the next time anyone uses the
-                    form.
+                    address or IP. After a day they are no longer used, and they are deleted the next time MercedTime sends
+                    an email.
                 </li>
             </ul>
             <p>Your address is used only to send that one email. It is not added to any list.</p>
