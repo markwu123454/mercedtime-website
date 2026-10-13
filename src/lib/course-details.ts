@@ -155,16 +155,15 @@ export async function courseDetails(term: string, crn: string): Promise<Details>
   return { description, prereqs };
 }
 
-/** Every course's corequisites, by course key ("PHYS008" -> ["PHYS008L"]). Empty if the API
- *  can't be reached. */
-export async function loadCoreqs(): Promise<Record<string, string[]>> {
-  "use cache";
-  cacheLife({ stale: 3600, revalidate: 3600, expire: 86_400 });
-  try {
-    const res = await fetch(`${API}/coreqs`, { signal: AbortSignal.timeout(15_000) });
-    if (!res.ok) return {};
-    return ((await res.json()) as { courses: Record<string, string[]> }).courses;
-  } catch {
-    return {};
-  }
+async function fetchCoreqs(): Promise<Record<string, string[]>> {
+  "use cache: remote";
+  cacheLife({ stale: 3600, revalidate: 86_400, expire: 7 * 86_400 });
+  const res = await fetch(`${API}/coreqs`, { signal: AbortSignal.timeout(15_000) });
+  if (!res.ok) throw new Error(`coreqs -> ${res.status}`);
+  return ((await res.json()) as { courses: Record<string, string[]> }).courses;
 }
+
+/** Every course's corequisites, by course key ("PHYS008" -> ["PHYS008L"]), kept a day like the
+ *  rest of the course pages' data (load-classes.ts). Empty, and not kept, if the API can't be
+ *  reached. */
+export const loadCoreqs = () => fetchCoreqs().catch((): Record<string, string[]> => ({}));

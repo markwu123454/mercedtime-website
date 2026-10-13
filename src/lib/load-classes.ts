@@ -4,8 +4,8 @@ import type { Classes, Meeting, Section } from "./classes";
 // Semesters' classes, from api.mercedtime.com (the mercedtime-api repo), cut down from Banner's
 // own rows (about 3 MB a term) to the fields the site draws: the newest open one behind
 // /api/classes (the home page's demos), the newest fall and spring behind the course pages and
-// the sitemap. Cached for five minutes,
-// so the seat counts are about as fresh as the server's own (it reads them at most once a minute).
+// the sitemap. The demos' are cached five minutes, with seat counts about as fresh as the server's
+// own (it reads them at most once a minute); the course pages' a day (see loadSemesters).
 
 const API = "https://api.mercedtime.com/v1";
 const DAY_KEYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] as const;
@@ -93,6 +93,30 @@ function slim(r: BannerRow): Section {
 }
 
 type Term = { code: string; description: string; viewOnly: boolean };
+type Catalog = { scrapedAt: string; rows: BannerRow[] };
+
+const termName = (t: Term) => t.description.replace(/ Semester/, "").replace(/\s*\(.*\)$/, "");
+
+/** A term's sections as the site draws them, with `seats` laid over the catalog's own counts. */
+function classesOf(term: Term, catalog: Catalog, seatsAt: number, seats?: { fields: string[]; seats: unknown[][] } | null): Classes {
+  const live = new Map<string, Record<string, unknown>>();
+  for (const s of seats?.seats ?? []) {
+    const counts: Record<string, unknown> = {};
+    seats!.fields.forEach((field, i) => { if (i) counts[field] = s[i]; });
+    live.set(String(s[0]), counts);
+  }
+  const subjects: Record<string, string> = {};
+  for (const r of catalog.rows) subjects[r.subject] = unescape(r.subjectDescription).trim();
+  return {
+    code: term.code,
+    term: termName(term),
+    seatsAt,
+    subjects,
+    sections: catalog.rows.map((r) => slim({ ...r, ...live.get(String(r.courseReferenceNumber)) })),
+  };
+}
+
+// --- the home page's demos: live --------------------------------------------------------
 
 async function getTerms(): Promise<Term[]> {
   "use cache";
@@ -104,27 +128,12 @@ async function getTerms(): Promise<Term[]> {
 async function loadTerm(term: Term): Promise<Classes> {
   "use cache";
   cacheLife({ stale: 60, revalidate: 300, expire: 3600 });
-
   const [catalog, seats] = await Promise.all([
-    get<{ rows: BannerRow[] }>(`catalog/${term.code}`),
+    get<Catalog>(`catalog/${term.code}`),
     // The catalog's counts are from the server's daily read; these are at most a minute old.
     get<{ fields: string[]; seats: unknown[][] }>(`seats/${term.code}`).catch(() => null),
   ]);
-  const live = new Map<string, Record<string, unknown>>();
-  for (const s of seats?.seats ?? []) {
-    const counts: Record<string, unknown> = {};
-    seats!.fields.forEach((field, i) => { if (i) counts[field] = s[i]; });
-    live.set(String(s[0]), counts);
-  }
-  const subjects: Record<string, string> = {};
-  for (const r of catalog.rows) subjects[r.subject] = unescape(r.subjectDescription).trim();
-  return {
-    code: term.code,
-    term: term.description.replace(/ Semester/, "").replace(/\s*\(.*\)$/, ""),
-    seatsAt: Date.now(),
-    subjects,
-    sections: catalog.rows.map((r) => slim({ ...r, ...live.get(String(r.courseReferenceNumber)) })),
-  };
+  return classesOf(term, catalog, Date.now(), seats);
 }
 
 /** The newest semester open for registration: the home page's demos. */
@@ -133,11 +142,33 @@ export async function loadClasses(): Promise<Classes> {
   return loadTerm(terms.find((t) => !t.viewOnly) ?? terms[0]);
 }
 
+// --- the course pages: daily ------------------------------------------------------------
+//
+// The course pages are a thousand-odd addresses crawlers visit around the clock, and every
+// /v1/seats or uncached /v1 request wakes the API's Neon database, which otherwise sleeps. So
+// they don't ask for live seats: they take the catalog's counts from the API's morning read, and
+// keep it a day in the remote cache, which every server instance shares, so the API is asked
+// about once a day per semester however many pages refresh.
+
+async function getTermsDaily(): Promise<Term[]> {
+  "use cache: remote";
+  cacheLife({ stale: 3600, revalidate: 86_400, expire: 7 * 86_400 });
+  return (await get<{ terms: Term[] }>("terms")).terms;
+}
+
+/** One term's sections, seats as of the API's morning read (`seatsAt`). */
+async function loadTermDaily(term: Term): Promise<Classes> {
+  "use cache: remote";
+  cacheLife({ stale: 3600, revalidate: 86_400, expire: 7 * 86_400 });
+  const catalog = await get<Catalog>(`catalog/${term.code}`);
+  return classesOf(term, catalog, Date.parse(catalog.scrapedAt) || Date.now());
+}
+
 /** The two newest fall and spring semesters (summer is left out), newest first: what the course
- *  pages list. A term that can't be had is left out; with neither, this throws. */
+ *  pages and the sitemap list. A term that can't be had is left out; with neither, this throws. */
 export async function loadSemesters(): Promise<Classes[]> {
-  const terms = (await getTerms()).filter((t) => /^(fall|spring)\b/i.test(t.description)).slice(0, 2);
-  const loaded = await Promise.allSettled(terms.map(loadTerm));
+  const terms = (await getTermsDaily()).filter((t) => /^(fall|spring)\b/i.test(t.description)).slice(0, 2);
+  const loaded = await Promise.allSettled(terms.map(loadTermDaily));
   const ok = loaded.flatMap((r) => (r.status === "fulfilled" ? [r.value] : []));
   if (!ok.length) throw new Error("no semesters");
   return ok;

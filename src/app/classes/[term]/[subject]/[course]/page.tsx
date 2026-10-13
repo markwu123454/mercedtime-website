@@ -7,8 +7,9 @@
  * instructors and seats, a link to the same course in the other semester, a few nearby courses in
  * its subject, and the store button. They're here for students searching a course's name ("MATH
  * 021 UC Merced"), so each is a real page for search engines, prerendered at build and refreshed
- * with the class data (every five minutes, load-classes.ts). A course the semester doesn't offer,
- * or a semester the site doesn't list, is a 404.
+ * once a day with the class data (load-classes.ts, loadSemesters), seats included: the extension
+ * is where they're live. A course the semester doesn't offer, or a semester the site doesn't list,
+ * is a 404.
  */
 
 import type {Metadata} from "next";
@@ -283,7 +284,8 @@ async function Course({params}: { params: Props["params"] }) {
                     {sections.map((s) => <SectionRow key={s.crn} s={s}/>)}
                 </ul>
                 <p className="mt-3 text-sm text-[#9fb0c6]">
-                    From UC Merced&apos;s public class search. Check UCM Registration before you register.
+                    From UC Merced&apos;s public class search, updated daily. MercedTime shows seats live; check UCM
+                    Registration before you register.
                 </p>
             </section>
 
