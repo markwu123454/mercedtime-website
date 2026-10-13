@@ -346,7 +346,7 @@ export default function SendLinkForm({ siteKey, className }: { siteKey: string; 
   return (
     <form onSubmit={submit} noValidate className={className}>
       <p className="text-sm leading-relaxed text-[#c9d4e2]">
-        MercedTime runs in Chrome on a computer. Send the link to your school email, then open it on your laptop.
+        MercedTime runs in Chrome on a computer. Email yourself the link.
       </p>
       <label
         ref={pill}

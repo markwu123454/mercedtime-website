@@ -26,7 +26,7 @@ const PREHEADER = "Open this on your laptop to add MercedTime to Chrome.";
 const INTRO =
   "MercedTime runs in Chrome on a computer. Open this email on your laptop and add it from the Chrome Web Store.";
 const FEATURES = [
-  "Search classes and see open seats, times and prerequisites at a glance",
+  "Search classes and see open seats, times, and prerequisites at a glance",
   "See every schedule that fits your classes, and keep lunch free",
   "Watch a full class and get a notification when a seat opens",
   "Track your degree, and see what your plan would finish",

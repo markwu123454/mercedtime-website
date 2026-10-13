@@ -79,6 +79,7 @@ export default function Backdrop() {
   return (
     <div
       aria-hidden
+      data-backdrop
       className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-lvh overflow-hidden bg-[linear-gradient(160deg,var(--color-navy-light)_0%,var(--color-navy)_30%,var(--color-navy-deep)_60%)] md:bg-[linear-gradient(160deg,var(--color-navy-light)_0%,var(--color-navy)_45%,var(--color-navy-deep)_100%)]"
     >
       <div className="absolute -top-[200px] -right-[220px] size-[480px] animate-drift rounded-full bg-[radial-gradient(circle,rgb(64_140_255/.28),rgb(64_140_255/0)_70%)] motion-reduce:animate-none md:-top-[260px] md:-right-[280px] md:size-[800px]" />
@@ -88,6 +89,10 @@ export default function Backdrop() {
         <Blocks blocks={NARROW} className="md:hidden" />
       </div>
       <div className="absolute inset-0 opacity-[.05]" style={{ backgroundImage: GRAIN }} />
+      {/* Phones: above the backdrop the browser shows the page's own navy-deep (under the status
+          bar, and on overscroll), so the backdrop's top fades in from it rather than starting at a
+          hard line. */}
+      <div className="absolute inset-x-0 top-0 h-32 bg-linear-to-b from-navy-deep to-transparent md:hidden" />
     </div>
   );
 }

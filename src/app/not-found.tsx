@@ -6,6 +6,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Page not found · MercedTime",
+  robots: { index: false },
 };
 
 export default function NotFound() {

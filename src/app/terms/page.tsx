@@ -7,12 +7,13 @@
  */
 
 import type { Metadata } from 'next';
+import { pageMetadata } from '../seo';
 
-export const metadata: Metadata = {
-    title: 'MercedTime terms of use',
-    description: 'The terms for using the MercedTime Chrome extension.',
-    alternates: { canonical: '/terms' },
-};
+export const metadata: Metadata = pageMetadata(
+    'MercedTime terms of use',
+    'The terms for using the MercedTime Chrome extension.',
+    '/terms',
+);
 
 export default function MercedTimeTermsPage() {
     return (
@@ -32,7 +33,7 @@ export default function MercedTimeTermsPage() {
                 Classes and open seats come from UCM Registration’s public class search, copied by MercedTime’s server
                 (api.mercedtime.com), and can be behind it: open seats by a few minutes, the list of classes by up to a
                 day, and which courses must be taken together by up to a month. The degree requirements are transcribed from the UC Merced General Catalog and may contain mistakes.
-                UCM Registration, My Degree Path and your advisor have the final word on what you can take and what you
+                UCM Registration, My Degree Path, and your advisor have the final word on what you can take and what you
                 need to graduate.
             </p>
 

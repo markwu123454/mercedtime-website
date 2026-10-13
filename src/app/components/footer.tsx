@@ -14,7 +14,7 @@ export default function Footer() {
                         MERCED<span className="text-gold">TIME</span>
                     </Link>
                     <p className="mt-3 text-sm leading-relaxed">
-                        An independent student project. Not made by, affiliated with or endorsed by the University of
+                        An independent student project. Not made by, affiliated with, or endorsed by the University of
                         California,
                         Merced.
                     </p>
