@@ -6,10 +6,10 @@
  * prerequisites for that semester, the corequisites, its sections with their times, rooms,
  * instructors and seats, a link to the same course in the other semester, a few nearby courses in
  * its subject, and the store button. They're here for students searching a course's name ("MATH
- * 021 UC Merced"), so each is a real page for search engines, prerendered at build and refreshed
- * once a day with the class data (load-classes.ts, loadSemesters), seats included: the extension
- * is where they're live. A course the semester doesn't offer, or a semester the site doesn't list,
- * is a 404.
+ * 021 UC Merced"), so each is a real page for search engines: rendered the first time it's asked
+ * for after a deploy (see generateStaticParams), kept, and refreshed once a day with the class data
+ * (load-classes.ts, loadSemesters), seats included: the extension is where they're live. A course
+ * the semester doesn't offer, or a semester the site doesn't list, is a 404.
  */
 
 import type {Metadata} from "next";
@@ -32,15 +32,16 @@ const NEARBY = 4;
 
 type Props = PageProps<"/classes/[term]/[subject]/[course]">;
 
-/** Every course in each semester. The build must have at least one, so if the class data can't be
- *  had it makes one page (which then fills in, or 404s, once it can). */
+/** One course, the newest semester's first: the rest are rendered the first time each is asked for
+ *  after a deploy, then kept like this one. Making all thousand-odd at build made every deploy slow
+ *  and asked Banner about each in one burst (course-details.ts); this way the asking is spread out,
+ *  and only for pages someone opens. The build must make at least one, so if the class data can't
+ *  be had it makes MATH 021 (which then fills in, or 404s, once it can). */
 export async function generateStaticParams() {
     try {
-        const semesters = await loadSemesters();
-        return semesters.flatMap((c) => [...new Set(c.sections.map((s) => s.course))].map((course) => {
-            const [, , term, subject, number] = coursePath(c.term, course).split("/");
-            return {term, subject, course: number};
-        }));
+        const [newest] = await loadSemesters();
+        const [, , term, subject, number] = coursePath(newest.term, newest.sections[0].course).split("/");
+        return [{term, subject, course: number}];
     } catch {
         return [{term: "spring-2027", subject: "math", course: "021"}];
     }
